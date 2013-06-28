@@ -6,7 +6,7 @@ app = Flask(__name__)
 def hello():
     return "Hello World!"
 
-@app.route("/messages", methods=['POST'])
+@app.route("/messages", methods=['GET'])
 def messages():
     start = request.args.get('start', default=None, type=int)
     end = request.args.get('end', default=None, type=int)
