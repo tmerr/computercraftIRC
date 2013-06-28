@@ -10,7 +10,7 @@ def hello():
 def messages():
     start = request.args.get('start', default=None, type=int)
     end = request.args.get('end', default=None, type=int)
-    return "start:" + start + " end:" + end
+    return "start:" + str(start) + " end:" + str(end)
 
 if __name__ == "__main__":
     app.run()
