@@ -45,28 +45,28 @@ def sendmessage():
 def users():
     users = agent.getUsers()
     d = {}
-    for row in users:
-        d["nick"] = row
+    for idx, row in enumerate(users):
+        d[idx] = row
     return jsonify(d)
 
 @app.route("/ops", methods=['GET'])
 def ops():
     ops = agent.getOps()
     d = {}
-    for row in ops:
-        d["nick"] = row
+    for idx, row in enumerate(ops):
+        d[idx] = row
     return jsonify(d)
 
 @app.route("/voiced", methods=['GET'])
 def voiced():
     voiced = agent.getVoiced()
     d = {}
-    for row in voiced:
-        d["user"] = row
+    for idx, row in enumerate(voiced):
+        d[idx] = row
     return jsonify(d)
 
 if __name__ == "__main__":
-    agent = IRCAgent("frogbox.es", 6667, "#buttstorm", "RobotBill")
+    agent = IRCAgent("frogbox.es", 6667, "#coldstorm", "RobotBill")
     t = threading.Thread(target = agent.start)
     t.daemon = True
     t.start()
