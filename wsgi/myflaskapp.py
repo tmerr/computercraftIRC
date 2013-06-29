@@ -66,7 +66,7 @@ def voiced():
     return jsonify(d)
 
 if __name__ == "__main__":
-    agent = IRCAgent("frogbox.es", 6667, "#coldstorm", "RobotBill")
+    agent = IRCAgent("irc.freenode.net", 8001, "#programming", "NotABot")
     t = threading.Thread(target = agent.start)
     t.daemon = True
     t.start()
