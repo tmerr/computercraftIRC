@@ -24,6 +24,20 @@ def messages():
         d[row[0]] = {"nick": row[1], "message": row[2]}
     return jsonify(d)
 
+@app.route("/sendmessage", methods=['GET', 'POST'])
+def sendmessage():
+    if request.method == 'POST':
+        ip = request.remote_addr
+        try:
+            msg = request.data.encode('utf-8')
+            print "sending message from " + ip + ": " + msg
+            agent.sendMessage(msg)
+            return "success"
+        except UnicodeDecodeError:
+            print "failed message from " + ip
+            return "failure"
+    return "This page requires a POST request"
+
 @app.route("/users", methods=['GET'])
 def users():
     users = agent.getUsers()
