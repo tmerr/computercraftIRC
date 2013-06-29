@@ -46,13 +46,25 @@ class IRCAgent(irc.bot.SingleServerIRCBot):
             return False
 
     def getUsers(self):
-        return self.channels[self.target].users()
+        channel = self.channels.get(self.target)
+        if channel == None:
+            return {}
+        else:
+            return channel.users()
 
     def getOps(self):
-        return self.channels[self.target].opers()
+        channel = self.channels.get(self.target)
+        if channel == None:
+            return {}
+        else:
+            return channel.opers()
 
     def getVoiced(self):
-        return self.channels[self.target].voiced()
+        channel = self.channels.get(self.target)
+        if channel == None:
+            return {}
+        else:
+            return channel.voiced()
 
     def on_welcome(self, connection, event):
         if irc.client.is_channel(self.target):

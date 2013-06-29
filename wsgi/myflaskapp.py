@@ -47,7 +47,7 @@ def users():
     d = {}
     for row in users:
         d["nick"] = row
-    return d
+    return jsonify(d)
 
 @app.route("/ops", methods=['GET'])
 def ops():
@@ -55,7 +55,7 @@ def ops():
     d = {}
     for row in ops:
         d["nick"] = row
-    return d
+    return jsonify(d)
 
 @app.route("/voiced", methods=['GET'])
 def voiced():
@@ -63,7 +63,7 @@ def voiced():
     d = {}
     for row in voiced:
         d["user"] = row
-    return d
+    return jsonify(d)
 
 if __name__ == "__main__":
     agent = IRCAgent("frogbox.es", 6667, "#buttstorm", "RobotBill")
