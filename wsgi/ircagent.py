@@ -11,7 +11,6 @@
 
 import irc.bot
 import irc.client
-from irc.client import irc_lower
 import sys
 import time
 from threading import Timer
