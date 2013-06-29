@@ -4,9 +4,6 @@
 # over IRC.  It has an interface to let the user get a slice of the last 500 
 # messages sent over IRC as well as the users, ops and voiced members.
 #
-# For some reason the getUsers, getOps, and getVoices methods use unicode
-# charactesr and that's something that should probably be fixed.
-#
 # Trevor Merrifield <trevorm42@gmail.com>
 
 import irc.bot
@@ -27,13 +24,17 @@ class IRCAgent(irc.bot.SingleServerIRCBot):
     def getMessages(self, start=None, end=None):
         """Get a range of messages, by default selecting everything.
         Exludes messages sent by agent."""
+        if start == None:
+            start = 0
+        if end == None:
+            end = self.lastmessageid + 1
+
         with self.lock:
-            if (start != None):
-                if (start < 0 or end < 0):
-                    return []
-                if self.lastmessageid > self.messagelimit:
-                    start += self.lastmessageid - self.messagelimit
-                    end += self.lastmessageid - self.messagelimit
+            if (start < 0 or end < 0):
+                return []
+            if self.lastmessageid > self.messagelimit:
+                start += self.lastmessageid - self.messagelimit
+                end += self.lastmessageid - self.messagelimit
             return self.messages[start:end]
 
     def sendMessage(self, text):
