@@ -14,7 +14,8 @@ import threading
 
 class IRCAgent(irc.bot.SingleServerIRCBot):
     def __init__(self, server, port, channel, nickname):
-        irc.bot.SingleServerIRCBot.__init__(self, [(server, port)], nickname, nickname)
+        irc.bot.SingleServerIRCBot.__init__(self, [(server, port)], nickname,
+                nickname, reconnection_interval=30)
         self.target = channel
         self.messages = []
         self.messagelimit = 500
