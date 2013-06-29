@@ -31,8 +31,11 @@ def sendmessage():
         try:
             msg = request.data.encode('utf-8')
             print "sending message from " + ip + ": " + msg
-            agent.sendMessage(msg)
-            return "success"
+            if agent.sendMessage(msg):
+                return "success"
+            else:
+                print "failed message from " + ip + ", bot not connected"
+                return "failure"
         except UnicodeDecodeError:
             print "failed message from " + ip
             return "failure"

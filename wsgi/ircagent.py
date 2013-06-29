@@ -39,7 +39,11 @@ class IRCAgent(irc.bot.SingleServerIRCBot):
 
     def sendMessage(self, text):
         """Send the text to the channel"""
-        self.connection.privmsg(self.target, text)
+        if self.connection.is_connected():
+            self.connection.privmsg(self.target, text)
+            return True
+        else:
+            return False
 
     def getUsers(self):
         return self.channels[self.target].users()
