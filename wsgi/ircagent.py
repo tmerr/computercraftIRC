@@ -21,16 +21,17 @@ class IRCAgent(irc.bot.SingleServerIRCBot):
         self.target = channel
         self.messages = []
         self.messagelimit = 500
-        lastmessageid = -1
+        self.lastmessageid = -1
 
     def getMessages(self, start=None, end=None):
-        """Get a range of messages. By default select everything.
-        Does not include messages sent by agent"""
-        if start < 0 or end < 0:
-            return None
-        if lastmessageid > self.messagelimit:
-            start += lastmessageid - self.messagelimit
-            end += lastmessageid - self.messagelimit
+        """Get a range of messages, by default selecting everything.
+        Exludes messages sent by agent."""
+        if (start != None):
+            if (start < 0 or end < 0):
+                return []
+            if self.lastmessageid > self.messagelimit:
+                start += self.lastmessageid - self.messagelimit
+                end += self.lastmessageid - self.messagelimit
         return self.messages[start:end]
 
     def sendMessage(self, text):
@@ -59,23 +60,23 @@ class IRCAgent(irc.bot.SingleServerIRCBot):
     def on_privmsg(self, connection, event):
         """Treat private messages like public but append pm to the sender
         nick"""
-        msgsource = event.source()
+        msgsource = event.source
         
         nick = msgsource.split('!')[0]
         nick = "pm: " + nick
-        body = event.arguments()[0].split(":", 1)[0]
+        body = event.arguments[0].split(":", 1)[0]
 
-        lastmessageid += 1
-        self.messages.append((lastmessageid, nick, body))
+        self.lastmessageid += 1
+        self.messages.append((self.lastmessageid, nick, body))
         if len(self.messages) > self.messagelimit:
             self.messages.pop(0)
 
     def on_pubmsg(self, connection, event):
-        msgsource = event.source() 
+        msgsource = event.source
         nick = msgsource.split('!')[0]
-        body = event.arguments()[0].split(":", 1)[0]
+        body = event.arguments[0].split(":", 1)[0]
 
-        lastmessageid += 1
-        self.messages.append((lastmessageid, nick, body))
+        self.lastmessageid += 1
+        self.messages.append((self.lastmessageid, nick, body))
         if len(self.messages) > self.messagelimit:
             self.messages.pop(0)
