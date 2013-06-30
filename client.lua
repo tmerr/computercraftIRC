@@ -62,8 +62,18 @@ end
 
 nickcolor = colors.gray
 messagecolor = colors.white
+dividercolor = colors.gray
 screenx, screeny = term.getSize()
 maxhistory = 50
+
+function drawDivider()
+	for y=1,screeny do
+		screen.setTextColor(dividercolor)
+		screen.setCursorPos(DIVIDER_POS, y)
+		screen.write("|")
+	end
+end
+
 chathistory = {}
 function addToChatPane(nick, message)	
 	table.insert(chathistory, {nick, message})
@@ -116,6 +126,7 @@ end
 function printVoiced()
 end
 
+drawDivider()
 while true do
 	updateMessages()
 	os.sleep(2)
