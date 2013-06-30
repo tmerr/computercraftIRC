@@ -62,7 +62,7 @@ end
 
 nickcolor = colors.gray
 messagecolor = colors.white
-dividercolor = colors.gray
+dividercolor = colors.white
 screenx, screeny = term.getSize()
 maxhistory = 50
 
