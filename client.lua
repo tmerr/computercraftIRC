@@ -1,13 +1,15 @@
+-------------------------------------------------------------------------config
+
+
+
 --os.loadAPI("json")
 
----------------------------------------------------------------------------urls
+------------------------------------------------------------------http requests
 
 MESSAGES_URL = "http://ftbirc.no-ip.biz:5000/messages"
 USERS_URL = "http://ftbirc.no-ip.biz:5000/users"
 OPS_URL = "http://ftbirc.no-ip.biz:5000/ops"
 VOICED_URL = "http://ftbirc.no-ip.biz:5000/voiced"
-
-------------------------------------------------------------------http requests
 
 function decodeJsonFrom(url)
 	local h = http.get(url)
@@ -34,10 +36,17 @@ end
 
 -----------------------------------------------------------------------printing
 
+function writeToUsersPane()
+end
+
+function writeToChatPane()	
+end
+
 function printMessages()
-	i = 0
-	while not (obj[tostring(i)] == nil) do
-		entry = obj[tostring(i)]
+	messages = getMessages()
+	local i = 0
+	while not (messages[tostring(i)] == nil) do
+		local entry = obj[tostring(i)]
 		print(entry["nick"]..": "..entry["message"])
 		i = i + 1
 	end
