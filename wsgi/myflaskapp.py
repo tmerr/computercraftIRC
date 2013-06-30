@@ -1,10 +1,11 @@
 from flask import Flask
 from flask import request
 from flask import jsonify
-app = Flask(__name__)
 from ircagent import IRCAgent
 import threading
 from time import sleep
+
+app = Flask(__name__)
 
 @app.route("/")
 def hello():
@@ -66,9 +67,8 @@ def voiced():
     return jsonify(d)
 
 if __name__ == "__main__":
-    agent = IRCAgent("irc.freenode.net", 8001, "#programming", "NotABot")
+    agent = IRCAgent("frogbox.es", 6667, "#coldstorm", "FTB")
     t = threading.Thread(target = agent.start)
     t.daemon = True
     t.start()
-    app.debug = True
-    app.run()
+    app.run(host='0.0.0.0')
