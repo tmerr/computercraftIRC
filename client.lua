@@ -91,7 +91,7 @@ function addToChatPane(nick, message)
 	-- write the nick message pairs
 	screenline = 1
 	for e=top_element, bot_element do
-		screen.setCursorPos(DIVIDER_POS + 1, screenline)
+		screen.setCursorPos(DIVIDER_POS + 2, screenline)
 		if screen.isColor() then
 			screen.setTextColor(nickcolor)
 		end
