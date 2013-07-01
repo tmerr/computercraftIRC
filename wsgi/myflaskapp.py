@@ -59,7 +59,7 @@ def ops():
     return jsonify(d)
 
 @app.route("/halfops", methods=['GET'])
-def ops():
+def halfops():
     halfops = agent.getHalfOps()
     d = {}
     for idx, row in enumerate(halfops):
