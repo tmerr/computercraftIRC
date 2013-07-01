@@ -20,6 +20,7 @@ end
 MESSAGES_URL = domain.."/messages"
 USERS_URL = domain.."/users"
 OPS_URL = domain.."/ops"
+OPS_URL = domain.."/halfops"
 VOICED_URL = domain.."/voiced"
 
 function decodeJsonFrom(url)
@@ -47,17 +48,22 @@ function fetchMessages(first, last)
 	return decodeJsonFrom(url)
 end
 
-function fetchUsers()
-	return decodeJsonFrom(USERS_URL)
-end
-
 function fetchOps()
 	return decodeJsonFrom(OPS_URL)
+end
+
+function fetchHalfOps()
+	return decodeJsonFrom(HALFOPS_URL)
 end
 
 function fetchVoiced()
 	return decodeJsonFrom(VOICED_URL)
 end
+
+function fetchUsers()
+	return decodeJsonFrom(USERS_URL)
+end
+
 
 --------------------------------------------------------------------------stuff
 
