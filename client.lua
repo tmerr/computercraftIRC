@@ -226,13 +226,11 @@ function UserPane.create(screen)
 	self.height = self.bot - self.top + 1
 	self.width = self.right - self.left + 1
 
-	self.userscolor = colors.white
-	self.opscolor = colors.white
-	self.voicedcolor = colors.yellow
-
-	self.users = {}
 	self.ops = {}
+	self.halfops = {}
 	self.voiced = {}
+	self.users = {}
+
 	return self
 end
 
@@ -250,6 +248,13 @@ function UserPane:setOps(nicks)
 	self:draw()
 end
 
+-- Set the halfops and redraw
+-- @param nicks the sequence of nicks
+function UserPane:setHalfOps(nicks)
+	self.halfops = nicks
+	self:draw()
+end
+
 -- Set the voiced and redraw
 -- @param voiced the sequence of nicks
 function UserPane:setVoiced(nicks)
@@ -262,20 +267,18 @@ function UserPane:draw()
 	self.screen.setCursorPos(self.left,self.top)
 
 	groups={
-		{self.users, self.userscolor},
-		{self.ops, self.opscolor},
-		{self.voiced, self.voicedcolor}
+		{self.ops, "@"},
+		{self.halfops, "%"}
+		{self.voiced, "+"}
+		{self.users, ""},
 	}
 
 	line = 1
 	for idx, val in ipairs(groups) do
 		local users = val[1]
-		local color = val[2]
-		if self.screen.isColor() then
-			self.screen.setTextColor(color)
-		end
-		for idx, val in ipairs(users) do
-			self.screen.write(val)
+		local prefix = val[2]
+		for idx, user in ipairs(users) do
+			self.screen.write(prefix..user)
 			line = line + 1
 			self.screen.setCursorPos(self.left, line)
 		end
