@@ -245,8 +245,17 @@ function printToUsersPane(text)
 end
 
 nextmsg = 0
-function updateMessages(c)
+function updateMessages(c, u)
 	messages = fetchMessages(nextmsg, nil)
+	users = fetchUsers()
+
+	local nextuser = 0
+	while not (users[tostring(nextuser)] == nil) do
+		local nick = users[tostring(nextuser)]
+		u:writeLine(nick, colors.white)
+		nextuser = nextuser + 1
+	end
+
 	while not (messages[tostring(nextmsg)] == nil) do
 		local entry = messages[tostring(nextmsg)]
 		local nicktext, nickcol = entry["nick"]..": ", colors.gray
@@ -268,7 +277,8 @@ end
 
 drawDivider(monitor)
 c = ChatPane.create(monitor)
+u = UserPane.create(monitor)
 while true do
-	updateMessages(c)
+	updateMessages(c, u)
 	os.sleep(2)
 end
