@@ -7,7 +7,7 @@ monitor = peripheral.wrap("left")
 monitor.clear()
 monitor.setCursorPos(1,1)
 
---os.loadAPI("json")
+os.loadAPI("json")
 
 ------------------------------------------------------------------http requests
 
@@ -63,7 +63,8 @@ end
 
 dividercolor = colors.white
 
-function drawDivider()
+function drawDivider(screen)
+	local screenwidth, screenheight = screen.getSize()
 	for y=1,screenheight do
 		screen.setTextColor(dividercolor)
 		screen.setCursorPos(DIVIDER_POS, y)
@@ -206,6 +207,9 @@ function ChatPane:draw()
 	end
 end
 
+----------------------------------------------------------------------user pane
+
+
 ---------------------------------------------------------------------other shit
 
 function printToUsersPane(text)
@@ -233,7 +237,7 @@ end
 function printVoiced()
 end
 
-drawDivider()
+drawDivider(monitor)
 c = ChatPane.create(monitor)
 while true do
 	updateMessages(c)
