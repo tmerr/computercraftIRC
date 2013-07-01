@@ -275,9 +275,9 @@ function UserPane:draw()
 
 	groups={
 		{self.ops, "@"},
-		{self.halfops, "%"}
-		{self.voiced, "+"}
-		{self.users, ""},
+		{self.halfops, "%"},
+		{self.voiced, "+"},
+		{self.users, ""}
 	}
 
 	line = 1
@@ -294,19 +294,66 @@ end
 
 ---------------------------------------------------------------------other shit
 
+-- Return a table where the keys are converted to numbers
+-- @param tbl the table indexed by strings starting at ["0"]
+function stringKeysToNum(tbl)
+	ret = {}
+	local nextidx = 0
+	
+	while not (tbl[tostring(nextidx)] == nil) do
+		local val = tbl[tostring(nextidx)]
+		table.insert(ret, val)
+		nextidx = nextidx + 1
+	end
+
+	return ret
+end
+
+-- Fetches the ranks from the web server and removes duplicate nicks by only
+-- placing each nick in its highest rank.
+-- @return the ops, halfops, voiced, and users
+function getRanks()
+	local ops = fetchOps()
+	local halfops = fetchHalfOps()
+	local voiced = fetchVoiced()
+	local users = fetchUsers()
+
+	ops = stringKeysToNum(ops)
+	halfops = stringKeysToNum(halfops)
+	voiced = stringKeysToNum(voiced)
+	users = stringKeysToNum(users)
+
+	-- Only put the rank in the output if it didn't show up in a previous
+	-- category.
+	local input = {ops, halfops, voiced, users}
+	local output = {{}, {}, {}, {}}
+	local alreadyseen = {}
+	for rankidx, rank in ipairs(input) do
+		for nickidx, nick in ipairs(rank) do
+			repeated = false
+			for seenidx, seen in ipairs(alreadyseen) do
+				if nick == seen then
+					repeated = true
+				end
+			end
+			if not repeated then
+				table.insert(output[rankidx], nick)
+				table.insert(alreadyseen, nick)
+			end
+		end
+	end
+	
+	return output[1], output[2], output[3], output[4]
+end
+
 nextmsg = 0
 function update(c, u)
 	messages = fetchMessages(nextmsg, nil)
-	users = fetchUsers()
-
-	usernicks = {}
-	local nextuser = 0
-	while not (users[tostring(nextuser)] == nil) do
-		local nick = users[tostring(nextuser)]
-		table.insert(usernicks, nick)
-		nextuser = nextuser + 1
-	end
-	u:setUsers(usernicks)
+	ops, halfops, voiced, users = getRanks()
+	u:setOps(ops)
+	u:setHalfOps(halfops)
+	u:setVoiced(voiced)
+	u:setUsers(users)
 
 	while not (messages[tostring(nextmsg)] == nil) do
 		local entry = messages[tostring(nextmsg)]
