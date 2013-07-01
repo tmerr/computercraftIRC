@@ -312,15 +312,6 @@ function update(c, u)
 	end
 end
 
-function printUsers()
-end
-
-function printOps()
-end
-
-function printVoiced()
-end
-
 drawDivider(monitor)
 c = ChatPane.create(monitor)
 u = UserPane.create(monitor)
