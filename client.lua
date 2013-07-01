@@ -226,17 +226,60 @@ function UserPane.create(screen)
 	self.height = self.bot - self.top + 1
 	self.width = self.right - self.left + 1
 
+	self.userscolor = colors.white
+	self.opscolor = colors.white
+	self.voicedcolor = colors.yellow
+
+	self.users = {}
+	self.ops = {}
+	self.voiced = {}
 	return self
 end
 
--- Write a single line of a single color
-function UserPane:writeLine(text, color)
-	if self.screen.isColor() then
-		self.screen.setTextColor(color)
+-- Set the users and redraw
+-- @param nicks the sequence of nicks
+function UserPane:setUsers(nicks)
+	self.users = nicks
+	self:draw()
+end
+
+-- Set the ops and redraw
+-- @param nicks the sequence of nicks
+function UserPane:setOps(nicks)
+	self.ops = nicks
+	self:draw()
+end
+
+-- Set the voiced and redraw
+-- @param voiced the sequence of nicks
+function UserPane:setVoiced(nicks)
+	self.voiced = nicks
+	self:draw()
+end
+
+-- Draw the nicks, ops and users
+function UserPane:draw()
+	self.screen.setCursorPos(self.left,self.top)
+
+	groups={
+		{self.users, self.userscolor},
+		{self.ops, self.opscolor},
+		{self.voiced, self.voicedcolor}
+	}
+
+	line = 1
+	for idx, val in ipairs(groups) do
+		local users = val[1]
+		local color = val[2]
+		if self.screen.isColor() then
+			self.screen.setTextColor(color)
+		end
+		for idx, val in ipairs(users) do
+			self.screen.write(val)
+			line = line + 1
+			self.screen.setCursorPos(self.left, line)
+		end
 	end
-	self.screen.write(text)
-	local x, y = self.screen.getCursorPos()
-	self.screen.setCursorPos(self.left, y+1)
 end
 
 ---------------------------------------------------------------------other shit
@@ -249,12 +292,14 @@ function update(c, u)
 	messages = fetchMessages(nextmsg, nil)
 	users = fetchUsers()
 
+	usernicks = {}
 	local nextuser = 0
 	while not (users[tostring(nextuser)] == nil) do
 		local nick = users[tostring(nextuser)]
-		u:writeLine(nick, colors.white)
+		table.insert(usernicks, nick)
 		nextuser = nextuser + 1
 	end
+	u:setUsers(usernicks)
 
 	while not (messages[tostring(nextmsg)] == nil) do
 		local entry = messages[tostring(nextmsg)]
