@@ -287,9 +287,6 @@ end
 
 ---------------------------------------------------------------------other shit
 
-function printToUsersPane(text)
-end
-
 nextmsg = 0
 function update(c, u)
 	messages = fetchMessages(nextmsg, nil)
