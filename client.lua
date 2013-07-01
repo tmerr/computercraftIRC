@@ -236,7 +236,7 @@ function UserPane:writeLine(text, color)
 	end
 	self.screen.write(text)
 	local x, y = self.screen.getCursorPos()
-	self:setCursorPos(1, y+1)
+	self.screen.setCursorPos(self.left, y+1)
 end
 
 ---------------------------------------------------------------------other shit
