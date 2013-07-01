@@ -75,7 +75,6 @@ end
 ----------------------------------------------------------------------chat pane
 ChatPane = {}
 ChatPane.__index = ChatPane
-
 function ChatPane.create(screen)
 	local self = {}
 	setmetatable(self, ChatPane)
@@ -144,7 +143,7 @@ function ChatPane:draw()
 	-- output is stored in a buffer and the bottom portion of it is sliced
 	-- off and displayed.
 	--
-	-- It is indexed by buffer[y[x["char" or "color"]]]
+	-- It is indexed by buffer[y][x]["char" or "color"]
 	local buffer = {{}}
 	local buff_left = 1
 	local buff_right = self.width
@@ -209,6 +208,36 @@ end
 
 ----------------------------------------------------------------------user pane
 
+-- UserPane allows for writing one line at a time of a single color with no
+-- line wrap
+UserPane = {}
+UserPane.__index = UserPane
+function UserPane.create(screen)
+	local self = {}
+	setmetatable(self,UserPane)
+
+	self.screen = screen
+	local screenwidth, screenheight = self.screen.getSize()
+
+	self.left = 1
+	self.right = DIVIDER_POS - 2
+	self.top = 1
+	self.bot = screenheight
+	self.height = self.bot - self.top + 1
+	self.width = self.right - self.left + 1
+
+	return self
+end
+
+-- Write a single line of a single color
+function UserPane:writeLine(text, color)
+	if self.screen.isColor() then
+		self.screen.setTextColor(color)
+	end
+	self.screen.write(text)
+	local x, y = self.screen.getCursorPos()
+	self:setCursorPos(1, y+1)
+end
 
 ---------------------------------------------------------------------other shit
 
