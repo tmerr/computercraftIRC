@@ -20,7 +20,7 @@ end
 MESSAGES_URL = domain.."/messages"
 USERS_URL = domain.."/users"
 OPS_URL = domain.."/ops"
-OPS_URL = domain.."/halfops"
+HALFOPS_URL = domain.."/halfops"
 VOICED_URL = domain.."/voiced"
 
 function decodeJsonFrom(url)
