@@ -245,7 +245,7 @@ function printToUsersPane(text)
 end
 
 nextmsg = 0
-function updateMessages(c, u)
+function update(c, u)
 	messages = fetchMessages(nextmsg, nil)
 	users = fetchUsers()
 
@@ -279,6 +279,6 @@ drawDivider(monitor)
 c = ChatPane.create(monitor)
 u = UserPane.create(monitor)
 while true do
-	updateMessages(c, u)
+	update(c, u)
 	os.sleep(2)
 end
