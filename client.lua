@@ -1,16 +1,8 @@
--------------------------------------------------------------------------config
-
-REMOTE = false     -- whether the script is being run remotely or locally
-DIVIDER_POS = 15  -- the divider between users and chat
-
-monitor = peripheral.wrap("left")
-monitor.clear()
-monitor.setCursorPos(1,1)
-
 os.loadAPI("json")
 
 ------------------------------------------------------------------http requests
 
+REMOTE = false     -- whether the script is being run remotely or locally
 if REMOTE then
 	domain = "http://ftbirc.no-ip.biz:5000"
 else
@@ -65,14 +57,64 @@ function fetchUsers()
 end
 
 
---------------------------------------------------------------------------stuff
+-- Return a table where the keys are converted to numbers
+-- @param tbl the table indexed by strings starting at ["0"]
+function stringKeysToNum(tbl)
+	ret = {}
+	local nextidx = 0
+	
+	while not (tbl[tostring(nextidx)] == nil) do
+		local val = tbl[tostring(nextidx)]
+		table.insert(ret, val)
+		nextidx = nextidx + 1
+	end
 
-dividercolor = colors.white
+	return ret
+end
 
-function drawDivider(screen)
+-- Fetches the ranks from the web server and removes duplicate nicks by only
+-- placing each nick in its highest rank.
+-- @return the ops, halfops, voiced, and users
+function getRanks()
+	local ops = fetchOps()
+	local halfops = fetchHalfOps()
+	local voiced = fetchVoiced()
+	local users = fetchUsers()
+
+	ops = stringKeysToNum(ops)
+	halfops = stringKeysToNum(halfops)
+	voiced = stringKeysToNum(voiced)
+	users = stringKeysToNum(users)
+
+	-- Only put the rank in the output if it didn't show up in a previous
+	-- category.
+	local input = {ops, halfops, voiced, users}
+	local output = {{}, {}, {}, {}}
+	local alreadyseen = {}
+	for rankidx, rank in ipairs(input) do
+		for nickidx, nick in ipairs(rank) do
+			repeated = false
+			for seenidx, seen in ipairs(alreadyseen) do
+				if nick == seen then
+					repeated = true
+				end
+			end
+			if not repeated then
+				table.insert(output[rankidx], nick)
+				table.insert(alreadyseen, nick)
+			end
+		end
+	end
+	
+	return output[1], output[2], output[3], output[4]
+end
+
+------------------------------------------------------------------------divider
+
+function drawDivider(screen, position, color)
 	local screenwidth, screenheight = screen.getSize()
 	for y=1,screenheight do
-		screen.setTextColor(dividercolor)
+		screen.setTextColor(color)
 		screen.setCursorPos(DIVIDER_POS, y)
 		screen.write("|")
 	end
@@ -292,64 +334,13 @@ function UserPane:draw()
 	end
 end
 
----------------------------------------------------------------------other shit
+----------------------------------------------------------------------main code
 
--- Return a table where the keys are converted to numbers
--- @param tbl the table indexed by strings starting at ["0"]
-function stringKeysToNum(tbl)
-	ret = {}
-	local nextidx = 0
-	
-	while not (tbl[tostring(nextidx)] == nil) do
-		local val = tbl[tostring(nextidx)]
-		table.insert(ret, val)
-		nextidx = nextidx + 1
-	end
-
-	return ret
-end
-
--- Fetches the ranks from the web server and removes duplicate nicks by only
--- placing each nick in its highest rank.
--- @return the ops, halfops, voiced, and users
-function getRanks()
-	local ops = fetchOps()
-	local halfops = fetchHalfOps()
-	local voiced = fetchVoiced()
-	local users = fetchUsers()
-
-	ops = stringKeysToNum(ops)
-	halfops = stringKeysToNum(halfops)
-	voiced = stringKeysToNum(voiced)
-	users = stringKeysToNum(users)
-
-	-- Only put the rank in the output if it didn't show up in a previous
-	-- category.
-	local input = {ops, halfops, voiced, users}
-	local output = {{}, {}, {}, {}}
-	local alreadyseen = {}
-	for rankidx, rank in ipairs(input) do
-		for nickidx, nick in ipairs(rank) do
-			repeated = false
-			for seenidx, seen in ipairs(alreadyseen) do
-				if nick == seen then
-					repeated = true
-				end
-			end
-			if not repeated then
-				table.insert(output[rankidx], nick)
-				table.insert(alreadyseen, nick)
-			end
-		end
-	end
-	
-	return output[1], output[2], output[3], output[4]
-end
 
 nextmsg = 0
 function update(c, u)
-	messages = fetchMessages(nextmsg, nil)
-	ops, halfops, voiced, users = getRanks()
+	local messages = fetchMessages(nextmsg, nil)
+	local ops, halfops, voiced, users = getRanks()
 	u:setOps(ops)
 	u:setHalfOps(halfops)
 	u:setVoiced(voiced)
@@ -365,10 +356,20 @@ function update(c, u)
 	end
 end
 
-drawDivider(monitor)
-c = ChatPane.create(monitor)
-u = UserPane.create(monitor)
-while true do
-	update(c, u)
-	os.sleep(2)
+function main()
+	local monitor = peripheral.wrap("left")
+
+	monitor.clear()
+	monitor.setCursorPos(1,1)
+	
+	drawDivider(monitor, 15, colors.white)
+	c = ChatPane.create(monitor)
+	u = UserPane.create(monitor)
+	
+	while true do
+		update(c, u)
+		os.sleep(2)
+	end
 end
+
+main()
