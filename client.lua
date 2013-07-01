@@ -208,8 +208,9 @@ end
 
 ----------------------------------------------------------------------user pane
 
--- UserPane allows for writing one line at a time of a single color with no
--- line wrap
+-- UserPane draws the IRC users by rank: ops, halfops, voiced and users. The
+-- ranks are treated as mutually exclusive so only add a user to one rank each
+-- to avoid duplicates.
 UserPane = {}
 UserPane.__index = UserPane
 function UserPane.create(screen)
