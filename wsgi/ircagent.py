@@ -60,6 +60,13 @@ class IRCAgent(irc.bot.SingleServerIRCBot):
         else:
             return channel.opers()
 
+    def getHalfOps(self):
+        channel = self.channels.get(self.target)
+        if channel == None:
+            return {}
+        else:
+            return channel.halfops()
+
     def getVoiced(self):
         channel = self.channels.get(self.target)
         if channel == None:

@@ -58,6 +58,14 @@ def ops():
         d[idx] = row
     return jsonify(d)
 
+@app.route("/halfops", methods=['GET'])
+def ops():
+    halfops = agent.getHalfOps()
+    d = {}
+    for idx, row in enumerate(halfops):
+        d[idx] = row
+    return jsonify(d)
+
 @app.route("/voiced", methods=['GET'])
 def voiced():
     voiced = agent.getVoiced()
@@ -67,7 +75,7 @@ def voiced():
     return jsonify(d)
 
 if __name__ == "__main__":
-    agent = IRCAgent("frogbox.es", 6667, "#coldstorm", "FTB")
+    agent = IRCAgent("frogbox.es", 6667, "#buttstorm", "FTB")
     t = threading.Thread(target = agent.start)
     t.daemon = True
     t.start()
