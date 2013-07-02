@@ -43,9 +43,11 @@ class IRCAgent(irc.bot.SingleServerIRCBot):
         """Send the text to the channel"""
         if self.connection.is_connected():
             self.connection.privmsg(self.target, text)
-            with lock:
+            with self.lock:
                 self.lastmessageid += 1
                 self.messages.append((self.lastmessageid, self.nickname, text))
+                if len(self.messages) > self.messagelimit:
+                    self.messages.pop(0)
             return True
         else:
             return False
