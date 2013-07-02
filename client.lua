@@ -464,7 +464,8 @@ end
 
 function main()
 	loadJsonAPI()
-	if peripheral.getType(MONITORSIDE) ~= "monitor" then
+	if not peripheral.isPresent(MONITORSIDE) or 
+	peripheral.getType(MONITORSIDE) ~= "monitor" then
 		say = "Attach a monitor to the "..MONITORSIDE.." or choose a"
 		say = say.." different side to attach the monitor by editing"
 		say = say.." the top of this file."
