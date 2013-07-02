@@ -1,12 +1,30 @@
-os.loadAPI("json")
+--Author: Trevor Merrifield <trevorm42@gmail.com>
+--Date: 7/2/13
+
+--[CONFIGURATION]--------------------------------------------------------------
+
+-- The monitor can be left, right, top, bottom, front, or back
+MONITORSIDE = "left"
+
+-- The delay between requests to the web server in seconds.
+REQUESTDELAY = 2
+
+-- The x position of the divider between the users and chat
+DIVIDERPOSITION = 15
+
+-- Whether to look for your own IP or a webserver
+REMOTE = true
+
+-- The domains
+REMOTEDOMAIN = "http://ftbirc.no-ip.biz:5000"
+LOCALDOMAIN = "http://127.0.0.1:5000"
 
 ------------------------------------------------------------------http requests
 
-REMOTE = false     -- whether the script is being run remotely or locally
 if REMOTE then
-	domain = "http://ftbirc.no-ip.biz:5000"
+	domain = REMOTEDOMAIN
 else
-	domain = "http://127.0.0.1:5000"
+	domain = LOCALDOMAIN
 end
 
 SENDMESSAGE_URL = domain.."/sendmessage"
@@ -30,7 +48,7 @@ function decodeJsonFrom(url)
 		else
 			print("Response code "..tostring(response).."... Retrying")
 		end
-		os.sleep(5)
+		os.sleep(10)
 		h = http.get(url)
 	end
 
@@ -417,24 +435,44 @@ function receive(c, u)
 	c:draw()
 end
 
-function receiveLoop(c, u)
+function receiveLoop(c, u, requestdelay)
 	while true do
 		receive(c, u)
 		os.sleep(2)
 	end
 end
 
+function loadJsonAPI()
+	if not fs.exists(shell.dir().."/json") then
+		print("Downloading JSON API...")
+		shell.run("pastebin", "get", "4nRg9CHU", "json")
+		os.loadAPI("json")
+		print("")
+	end
+end
+
 function main()
-	local monitor = peripheral.wrap("left")
+	loadJsonAPI()
+	print("Welcome to IRC. Type /exit at any time to leave.")
+	if peripheral.getType(MONITORSIDE) ~= "monitor" then
+		say = "Attach a monitor to the "..MONITORSIDE.." or choose a"
+		say = say.." different side to attach the monitor by editing"
+		say = say.." the top of this file."
+		print(say)
+		return
+	end
+	local monitor = peripheral.wrap(MONITORSIDE)
+	local requestdelay = REQUESTDELAY
+	local dividerpos = DIVIDERPOSITION
 
 	monitor.clear()
 	monitor.setCursorPos(1,1)
 	
-	drawDivider(monitor, 15, colors.white)
-	local c = ChatPane.create(monitor,15)
-	local u = UserPane.create(monitor,15)
+	drawDivider(monitor, dividerpos, colors.white)
+	local c = ChatPane.create(monitor, dividerpos)
+	local u = UserPane.create(monitor, dividerpos)
 	
-	local anon = function() return receiveLoop(c, u) end
+	local anon = function() return receiveLoop(c, u, requestdelay) end
 	parallel.waitForAny(sendMessagesLoop, anon)
 	monitor.clear()
 end
