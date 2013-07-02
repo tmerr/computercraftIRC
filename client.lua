@@ -128,7 +128,6 @@ function ChatPane.create(screen)
 	setmetatable(self, ChatPane)
 	
 	self.screen = screen
-	self.maxhistory = 50
 
 	local screenwidth, screenheight = self.screen.getSize()
 	self.left = DIVIDER_POS + 2
@@ -142,6 +141,8 @@ function ChatPane.create(screen)
 	-- characters and mashed together.
 	-- It's a sequence of {["char"], ["color"]}
 	self.history = {}
+	-- Maximum characters before removing from the front
+	self.maxhistory = 10000
 	
 	return self
 end
@@ -169,6 +170,12 @@ function ChatPane:position(left, right, top, bot)
 	-- update drawing
 end
 
+function ChatPane:trimHistory()
+	while #self.history > self.maxhistory do
+		self.history.remove(self.history, 1)
+	end
+end
+
 -- Write to the chat pane. Accepts \n characters. Color arg is optional.
 function ChatPane:write(text, color)
 	color = color or colors.white
@@ -176,6 +183,7 @@ function ChatPane:write(text, color)
 		local ch = string.sub(text, i, i)
 		local pair = {["char"]=ch, ["color"]=color}
 		table.insert(self.history, pair)
+		self:trimHistory()
 	end
 	self:draw()
 end
