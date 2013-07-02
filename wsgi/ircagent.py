@@ -17,6 +17,7 @@ class IRCAgent(irc.bot.SingleServerIRCBot):
         irc.bot.SingleServerIRCBot.__init__(self, [(server, port)], nickname,
                 nickname, reconnection_interval=30)
         self.target = channel
+        self.nickname = nickname
         self.messages = []
         self.messagelimit = 500
         self.lastmessageid = -1
@@ -42,6 +43,9 @@ class IRCAgent(irc.bot.SingleServerIRCBot):
         """Send the text to the channel"""
         if self.connection.is_connected():
             self.connection.privmsg(self.target, text)
+            with lock:
+                self.lastmessageid += 1
+                self.messages.append((self.lastmessageid, self.nickname, text))
             return True
         else:
             return False
