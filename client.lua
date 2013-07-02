@@ -475,7 +475,7 @@ function loadJsonAPI()
 	if not json then
 		print("Downloading JSON API...")
 		shell.run("pastebin", "get", "4nRg9CHU", "json")
-		os.loadAPI("json")
+		os.loadAPI(shell.dir().."/json")
 		print("")
 	end
 end
