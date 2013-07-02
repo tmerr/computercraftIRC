@@ -81,10 +81,12 @@ end
 -- placing each nick in its highest rank.
 -- @return the ops, halfops, voiced, and users
 function getRanks()
-	local ops = fetchOps()
-	local halfops = fetchHalfOps()
-	local voiced = fetchVoiced()
-	local users = fetchUsers()
+	local ops, halfops, voiced, users
+	local a = function() ops = fetchOps() end
+	local b = function() halfops = fetchHalfOps() end
+	local c = function() voiced = fetchVoiced() end
+	local d = function() users = fetchUsers() end
+	parallel.waitForAll(a, b, c, d)
 
 	ops = stringKeysToNum(ops)
 	halfops = stringKeysToNum(halfops)
@@ -379,8 +381,14 @@ end
 
 nextmsg = 0
 function receive(c, u)
-	local messages = fetchMessages(nextmsg, nil)
-	local ops, halfops, voiced, users = getRanks()
+	local messages
+	local a = function() messages = fetchMessages(nextmsg, nil) end
+
+	local ops, halfops, voiced, users
+	local b = function() ops, halfops, voiced, users = getRanks() end
+
+	parallel.waitForAll(a, b)
+
 	u:setOps(ops)
 	u:setHalfOps(halfops)
 	u:setVoiced(voiced)
