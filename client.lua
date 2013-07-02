@@ -65,7 +65,7 @@ end
 -- Return a table where the keys are converted to numbers
 -- @param tbl the table indexed by strings starting at ["0"]
 function stringKeysToNum(tbl)
-	ret = {}
+	local ret = {}
 	local nextidx = 0
 	
 	while not (tbl[tostring(nextidx)] == nil) do
@@ -98,7 +98,7 @@ function getRanks()
 	local alreadyseen = {}
 	for rankidx, rank in ipairs(input) do
 		for nickidx, nick in ipairs(rank) do
-			repeated = false
+			local repeated = false
 			for seenidx, seen in ipairs(alreadyseen) do
 				if nick == seen then
 					repeated = true
@@ -251,11 +251,11 @@ function ChatPane:draw()
 		startread = 1
 	end
 	for linenum=startread,#buffer do
-		line = buffer[linenum]
+		local line = buffer[linenum]
 		for letternum=1,#line do
-			letter = line[letternum]
-			ch = letter["char"]
-			col = letter["color"]
+			local letter = line[letternum]
+			local ch = letter["char"]
+			local col = letter["color"]
 			if self.screen.isColor() then
 				self.screen.setTextColor(col)
 			end
@@ -328,7 +328,7 @@ end
 function UserPane:draw()
 	self.screen.setCursorPos(self.left,self.top)
 
-	groups={
+	local groups={
 		{self.ops, "@"},
 		{self.halfops, "%"},
 		{self.voiced, "+"},
@@ -363,7 +363,7 @@ function sendMessagesLoop()
 	local exit = false
 	while not exit do
 		write("Send: ")
-		input = read()
+		local input = read()
 		if (input == exitCommands[1]) or (input == exitCommands[2]) then
 			exit = true
 		elseif string.sub(input, 1, 1) == "/" then
@@ -410,8 +410,8 @@ function main()
 	monitor.setCursorPos(1,1)
 	
 	drawDivider(monitor, 15, colors.white)
-	c = ChatPane.create(monitor,15)
-	u = UserPane.create(monitor,15)
+	local c = ChatPane.create(monitor,15)
+	local u = UserPane.create(monitor,15)
 	
 	local anon = function() return receiveLoop(c, u) end
 	parallel.waitForAny(sendMessagesLoop, anon)
