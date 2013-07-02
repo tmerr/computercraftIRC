@@ -20,8 +20,20 @@ function sendMessage(text)
 	http.post(SENDMESSAGE_URL, text)
 end
 
+-- Load the page at the URL, and return the JSON object from it. This function
+-- will not return until it has an answer and a response code 200 OK.
 function decodeJsonFrom(url)
 	local h = http.get(url)
+	while h == nil or h.getResponseCode() ~= 200 do
+		if h == nil then
+			print("Failed to connect... Retrying")
+		else
+			print("Response code "..tostring(response).."... Retrying")
+		end
+		os.sleep(5)
+		h = http.get(url)
+	end
+
 	local str = h.readAll()
 	local messages = json.decode(str)
 	return messages
