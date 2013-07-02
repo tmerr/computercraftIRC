@@ -367,14 +367,24 @@ function UserPane:draw()
 		{self.users, ""}
 	}
 
-	line = 1
+	local line = 1
 	for idx, val in ipairs(groups) do
 		local users = val[1]
 		local prefix = val[2]
 		for idx, user in ipairs(users) do
-			self.screen.write(prefix..user)
+			local out = string.sub(prefix..user, 1, self.right)
+			self.screen.write(out)
+			freespace = self.right - #out + 1
+			for i=1,freespace do
+				self.screen.write(" ")
+			end
 			line = line + 1
 			self.screen.setCursorPos(self.left, line)
+		end
+	end
+	for i=line, self.bot do
+		for i=1,self.right do
+			self.screen.write(" ")
 		end
 	end
 end
