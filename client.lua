@@ -374,7 +374,7 @@ function UserPane:draw()
 		for idx, user in ipairs(users) do
 			local out = string.sub(prefix..user, 1, self.right)
 			self.screen.write(out)
-			freespace = self.right - #out + 1
+			freespace = self.right - #out
 			for i=1,freespace do
 				self.screen.write(" ")
 			end
@@ -383,7 +383,8 @@ function UserPane:draw()
 		end
 	end
 	for i=line, self.bot do
-		for i=1,self.right do
+		self.screen.setCursorPos(self.left, i)
+		for i=self.left,self.right do
 			self.screen.write(" ")
 		end
 	end
