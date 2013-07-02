@@ -182,6 +182,7 @@ function ChatPane:trimHistory()
 end
 
 -- Write to the chat pane. Accepts \n characters. Color arg is optional.
+-- It will NOT draw automatically, the user must call draw()
 function ChatPane:write(text, color)
 	color = color or colors.white
 	for i=1,#text do
@@ -190,7 +191,6 @@ function ChatPane:write(text, color)
 		table.insert(self.history, pair)
 		self:trimHistory()
 	end
-	self:draw()
 end
 
 function ChatPane:newLine()
@@ -394,6 +394,7 @@ function receive(c, u)
 		c:write(msgtext, msgcol)
 		nextmsg = nextmsg + 1
 	end
+	c:draw()
 end
 
 function receiveLoop(c, u)
