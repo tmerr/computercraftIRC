@@ -464,14 +464,14 @@ end
 
 function main()
 	loadJsonAPI()
-	print("Welcome to IRC. Type /exit at any time to leave.")
 	if peripheral.getType(MONITORSIDE) ~= "monitor" then
 		say = "Attach a monitor to the "..MONITORSIDE.." or choose a"
 		say = say.." different side to attach the monitor by editing"
 		say = say.." the top of this file."
 		print(say)
 		return
-	end
+	end	
+	print("Welcome to IRC. Type /exit at any time to leave.")
 	local monitor = peripheral.wrap(MONITORSIDE)
 	local requestdelay = REQUESTDELAY
 	local dividerpos = DIVIDERPOSITION
