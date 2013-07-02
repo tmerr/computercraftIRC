@@ -424,6 +424,7 @@ function main()
 	
 	local anon = function() return receiveLoop(c, u) end
 	parallel.waitForAny(sendMessagesLoop, anon)
+	monitor.clear()
 end
 
 main()
