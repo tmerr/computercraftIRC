@@ -9,11 +9,16 @@ else
 	domain = "http://127.0.0.1:5000"
 end
 
+SENDMESSAGE_URL = domain.."/sendmessage"
 MESSAGES_URL = domain.."/messages"
 USERS_URL = domain.."/users"
 OPS_URL = domain.."/ops"
 HALFOPS_URL = domain.."/halfops"
 VOICED_URL = domain.."/voiced"
+
+function sendMessage(text)
+	http.post(SENDMESSAGE_URL, text)
+end
 
 function decodeJsonFrom(url)
 	local h = http.get(url)
@@ -115,7 +120,7 @@ function drawDivider(screen, position, color)
 	local screenwidth, screenheight = screen.getSize()
 	for y=1,screenheight do
 		screen.setTextColor(color)
-		screen.setCursorPos(DIVIDER_POS, y)
+		screen.setCursorPos(position, y)
 		screen.write("|")
 	end
 end
@@ -123,14 +128,14 @@ end
 ----------------------------------------------------------------------chat pane
 ChatPane = {}
 ChatPane.__index = ChatPane
-function ChatPane.create(screen)
+function ChatPane.create(screen, dividerpos)
 	local self = {}
 	setmetatable(self, ChatPane)
 	
 	self.screen = screen
 
 	local screenwidth, screenheight = self.screen.getSize()
-	self.left = DIVIDER_POS + 2
+	self.left = dividerpos + 2
 	self.right = screenwidth
 	self.top = 1
 	self.bot = screenheight
@@ -269,7 +274,7 @@ end
 -- to avoid duplicates.
 UserPane = {}
 UserPane.__index = UserPane
-function UserPane.create(screen)
+function UserPane.create(screen, dividerpos)
 	local self = {}
 	setmetatable(self,UserPane)
 
@@ -277,7 +282,7 @@ function UserPane.create(screen)
 	local screenwidth, screenheight = self.screen.getSize()
 
 	self.left = 1
-	self.right = DIVIDER_POS - 2
+	self.right = dividerpos - 2
 	self.top = 1
 	self.bot = screenheight
 	self.height = self.bot - self.top + 1
@@ -342,11 +347,38 @@ function UserPane:draw()
 	end
 end
 
+---------------------------------------------------------------sending messages
+
+-- Parse the command.
+-- @param command whatever text comes after the slash
+function parseCommand(command)
+	-- No commands yet
+end
+
+-- This function loops asking the user for input and sending the irc message to
+-- the webserver.
+function sendMessagesLoop()
+	local exitCommands = {"/quit", "/exit"}
+
+	local exit = false
+	while not exit do
+		write("Send: ")
+		input = read()
+		if (input == exitCommands[1]) or (input == exitCommands[2]) then
+			exit = true
+		elseif string.sub(input, 1, 1) == "/" then
+			parseCommand(string.sub(input,2))
+		else
+			sendMessage(input)
+		end
+	end
+end
+
 ----------------------------------------------------------------------main code
 
 
 nextmsg = 0
-function update(c, u)
+function receive(c, u)
 	local messages = fetchMessages(nextmsg, nil)
 	local ops, halfops, voiced, users = getRanks()
 	u:setOps(ops)
@@ -364,6 +396,13 @@ function update(c, u)
 	end
 end
 
+function receiveLoop(c, u)
+	while true do
+		receive(c, u)
+		os.sleep(2)
+	end
+end
+
 function main()
 	local monitor = peripheral.wrap("left")
 
@@ -371,13 +410,11 @@ function main()
 	monitor.setCursorPos(1,1)
 	
 	drawDivider(monitor, 15, colors.white)
-	c = ChatPane.create(monitor)
-	u = UserPane.create(monitor)
+	c = ChatPane.create(monitor,15)
+	u = UserPane.create(monitor,15)
 	
-	while true do
-		update(c, u)
-		os.sleep(2)
-	end
+	local anon = function() return receiveLoop(c, u) end
+	parallel.waitForAny(sendMessagesLoop, anon)
 end
 
 main()
