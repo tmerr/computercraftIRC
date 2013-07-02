@@ -6,14 +6,21 @@
 -- The monitor can be left, right, top, bottom, front, or back
 MONITORSIDE = "left"
 
--- The delay between requests to the web server in seconds.
-REQUESTDELAY = 2
-
 -- The x position of the divider between the users and chat
 DIVIDERPOSITION = 15
 
 -- Whether to look for your own IP or a webserver
 REMOTE = true
+
+-- The delay between requests to the web server in seconds.
+REQUESTDELAY = 2
+
+-- Whether to make parallel http requests
+PARALLEL = true
+
+-- Set to false to disable the computer's terminal.
+-- Useful for debugging
+USETERMINAL = true
 
 -- The domains
 REMOTEDOMAIN = "http://ftbirc.no-ip.biz:5000"
@@ -116,7 +123,14 @@ function getRanks()
 	local b = function() halfops = fetchHalfOps() end
 	local c = function() voiced = fetchVoiced() end
 	local d = function() users = fetchUsers() end
-	parallel.waitForAll(a, b, c, d)
+	if PARALLEL then
+		parallel.waitForAll(a, b, c, d)
+	else
+		a()
+		b()
+		c()
+		d()
+	end
 
 	ops = stringKeysToNum(ops)
 	halfops = stringKeysToNum(halfops)
@@ -423,12 +437,16 @@ end
 nextmsg = 0
 function receive(c, u)
 	local messages
-	local a = function() messages = fetchMessages(nextmsg, nil) end
-
 	local ops, halfops, voiced, users
+	
+	local a = function() messages = fetchMessages(nextmsg, nil) end
 	local b = function() ops, halfops, voiced, users = getRanks() end
-
-	parallel.waitForAll(a, b)
+	if PARALLEL then
+		parallel.waitForAll(a, b)
+	else
+		a()
+		b()
+	end
 
 	u:setOps(ops)
 	u:setHalfOps(halfops)
@@ -454,7 +472,7 @@ function receiveLoop(c, u, requestdelay)
 end
 
 function loadJsonAPI()
-	if not fs.exists(shell.dir().."/json") then
+	if not json then
 		print("Downloading JSON API...")
 		shell.run("pastebin", "get", "4nRg9CHU", "json")
 		os.loadAPI("json")
@@ -471,7 +489,7 @@ function main()
 		say = say.." the top of this file."
 		print(say)
 		return
-	end	
+	end
 	print("Welcome to IRC. Type /exit at any time to leave.")
 	local monitor = peripheral.wrap(MONITORSIDE)
 	local requestdelay = REQUESTDELAY
@@ -484,8 +502,13 @@ function main()
 	local c = ChatPane.create(monitor, dividerpos)
 	local u = UserPane.create(monitor, dividerpos)
 	
-	local anon = function() return receiveLoop(c, u, requestdelay) end
-	parallel.waitForAny(sendMessagesLoop, anon)
+	if USETERMINAL then
+		local anon = function() return receiveLoop(c, u, requestdelay) end
+		parallel.waitForAny(sendMessagesLoop, anon)
+	else
+		receiveLoop(c, u, requestdelay)
+	end
+
 	monitor.clear()
 end
 
