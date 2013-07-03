@@ -47,6 +47,7 @@ end
 
 -- Load the page at the URL, and return the JSON object from it. This function
 -- will not return until it has an answer and a response code 200 OK.
+-- Failure to parse the JSON will either result in a crash or return nil
 function decodeJsonFrom(url)
 	local h = http.get(url)
 	while h == nil or h.getResponseCode() ~= 200 do
