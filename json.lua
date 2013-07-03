@@ -118,7 +118,14 @@ function parseNumber(str)
 end
 
 function parseString(str)
-	local i,j = str:find('^".-[^\\]?"')
+	local i,j
+
+	if str:sub(1,2) == '""' then
+		i,j = 1,2
+	else
+		i,j = str:find('^".-[^\\]"')
+	end
+	
 	local s = str:sub(i + 1,j - 1)
 
 	for k,v in pairs(controls) do
