@@ -26,6 +26,9 @@ USETERMINAL = true
 REMOTEDOMAIN = "http://ftbirc.no-ip.biz:5000"
 LOCALDOMAIN = "http://127.0.0.1:5000"
 
+-- JSON library pastebin location
+JSONPASTEBIN = "TznW61K0"
+
 ------------------------------------------------------------------http requests
 
 if REMOTE then
@@ -475,7 +478,7 @@ end
 function loadJsonAPI()
 	if not json then
 		print("Downloading JSON API...")
-		shell.run("pastebin", "get", "4nRg9CHU", "json")
+		shell.run("pastebin", "get", JSONPASTEBIN, "json")
 		os.loadAPI(shell.dir().."/json")
 		print("")
 	end
