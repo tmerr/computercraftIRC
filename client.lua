@@ -471,7 +471,7 @@ function receive(c, u)
 	u:setVoiced(voiced)
 	u:setUsers(users)
 
-	while not (messages[tostring(nextmsg)] == nil) do
+	while messages[tostring(nextmsg)] ~= nil do
 		local entry = messages[tostring(nextmsg)]
 		local nicktext, nickcol = entry["nick"]..": ", colors.gray
 		local msgtext, msgcol = entry["message"], colors.white
