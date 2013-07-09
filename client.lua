@@ -227,7 +227,7 @@ end
 
 function ChatPane:trimHistory()
 	while #self.history > self.maxhistory do
-		self.history.remove(self.history, 1)
+		table.remove(self.history, 1)
 	end
 end
 
