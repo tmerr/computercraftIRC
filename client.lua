@@ -437,8 +437,22 @@ end
 
 ----------------------------------------------------------------------main code
 
+-- Get the least message index on the server. This is where to start adding
+-- messages to the chat pane.
+function getLeastMessageIndex()
+	local messages = fetchMessages()
 
-nextmsg = 0
+	local leastidx
+	for idx, entry in pairs(messages) do
+		if leastidx == nil or tonumber(idx) < leastidx then
+			leastidx = tonumber(idx)
+		end
+	end
+
+	return leastidx
+end
+
+nextmsg = getLeastMessageIndex()
 function receive(c, u)
 	local messages
 	local ops, halfops, voiced, users
