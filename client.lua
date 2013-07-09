@@ -27,7 +27,7 @@ REMOTEDOMAIN = "http://ftbirc.no-ip.biz:5000"
 LOCALDOMAIN = "http://127.0.0.1:5000"
 
 -- JSON library pastebin location
-JSONPASTEBIN = "TznW61K0"
+JSONPASTEBIN = "NpW60mh3"
 
 ------------------------------------------------------------------http requests
 
@@ -64,7 +64,7 @@ function decodeJsonFrom(url)
 	end
 
 	local str = h.readAll()
-	local messages = json.decode(str)
+	local messages = json:decode(str)
 	return messages
 end
 
@@ -476,12 +476,12 @@ function receiveLoop(c, u, requestdelay)
 end
 
 function loadJsonAPI()
-	if not json then
+	if not fs.exists(shell.dir().."/JSON") then
 		print("Downloading JSON API...")
-		shell.run("pastebin", "get", JSONPASTEBIN, "json")
-		os.loadAPI(shell.dir().."/json")
+		shell.run("pastebin", "get", JSONPASTEBIN, "JSON")
 		print("")
 	end
+	json = (loadfile "JSON")()
 end
 
 function main()
