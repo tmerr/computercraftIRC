@@ -471,7 +471,7 @@ end
 function receiveLoop(c, u, requestdelay)
 	while true do
 		receive(c, u)
-		os.sleep(2)
+		os.sleep(requestdelay)
 	end
 end
 
