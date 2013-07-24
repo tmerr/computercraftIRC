@@ -435,11 +435,22 @@ function sendMessagesLoop()
 	end
 end
 
-----------------------------------------------------------------------main code
+-------------------------------------------------------------receiving messages
 
--- Get the least message index on the server. This is where to start adding
--- messages to the chat pane.
-function getLeastMessageIndex()
+Receiver = {}
+Receiver.__index = Receiver
+function Receiver.create()
+	local self = {}
+	setmetatable(self, Receiver)
+	
+	-- Index of next chat message to be written to the chat pane
+	self.nextmsg = nil
+	
+	return self
+end
+
+-- Get the least message index on the server, where to start receiving
+function Receiver:getLeastMessageIndex()
 	local messages = fetchMessages()
 
 	local leastidx
@@ -452,12 +463,15 @@ function getLeastMessageIndex()
 	return leastidx
 end
 
-nextmsg = getLeastMessageIndex()
-function receive(c, u)
+-- Receive any new messages and update the ChatPane, and receive the users and
+-- update the UserPane
+-- @param c the ChatPane
+-- @param u the UserPane
+function Receiver:receiveOnce(c, u, nextmessage)
 	local messages
 	local ops, halfops, voiced, users
 	
-	local a = function() messages = fetchMessages(nextmsg, nil) end
+	local a = function() messages = fetchMessages(self.nextmsg, nil) end
 	local b = function() ops, halfops, voiced, users = getRanks() end
 	if PARALLEL then
 		parallel.waitForAll(a, b)
@@ -471,23 +485,27 @@ function receive(c, u)
 	u:setVoiced(voiced)
 	u:setUsers(users)
 
-	while messages[tostring(nextmsg)] ~= nil do
-		local entry = messages[tostring(nextmsg)]
+	while messages[tostring(self.nextmsg)] ~= nil do
+		local entry = messages[tostring(self.nextmsg)]
 		local nicktext, nickcol = entry["nick"]..": ", colors.gray
 		local msgtext, msgcol = entry["message"], colors.white
 		c:write("\n"..nicktext, nickcol)
 		c:write(msgtext, msgcol)
-		nextmsg = nextmsg + 1
+		self.nextmsg = self.nextmsg + 1
 	end
 	c:draw()
 end
 
-function receiveLoop(c, u, requestdelay)
+-- Indefinitely update the ChatPane and UserPane
+function Receiver:start(c, u, requestdelay)
+	self.nextmsg = self:getLeastMessageIndex()
 	while true do
-		receive(c, u)
+		self:receiveOnce(c, u)
 		os.sleep(requestdelay)
 	end
 end
+
+-------------------------------------------------------------------------------
 
 function loadJsonAPI()
 	if not fs.exists(shell.dir().."/JSON") then
@@ -519,12 +537,13 @@ function main()
 	drawDivider(monitor, dividerpos, colors.white)
 	local c = ChatPane.create(monitor, dividerpos)
 	local u = UserPane.create(monitor, dividerpos)
-	
+	local r = Receiver.create()
+
+	local start_receive = function() return r:start(c, u, requestdelay) end
 	if USETERMINAL then
-		local anon = function() return receiveLoop(c, u, requestdelay) end
-		parallel.waitForAny(sendMessagesLoop, anon)
+		parallel.waitForAny(sendMessagesLoop, start_receive)
 	else
-		receiveLoop(c, u, requestdelay)
+		start_receive()
 	end
 
 	monitor.clear()
