@@ -1,5 +1,11 @@
+<<<<<<< HEAD
 .project
 *.pyc
 *.pyo
 *~
 wsgi/venv
+=======
+*~
+*.swp
+*.swo
+>>>>>>> lua/master
