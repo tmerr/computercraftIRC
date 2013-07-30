@@ -1,10 +1,11 @@
-# This is a manual test for the ircagent. The user needs to check that the
-# values are correct.  
-#
-# The bot should join a channel and send 3 messages.  Then it will pause for 10
-# seconds after which it will print the messages, users, ops and voiced users.
-# 
-# Trevor Merrifield <trevorm42@gmail.com>
+#! /usr/bin/env python
+
+"""This is a manual test for the ircagent. The user needs to check that the
+values are correct. The bot should join a channel and send 3 messages.  Then
+it will pause for 10 seconds after which it will print the messages, users, ops
+and voiced users."""
+
+__author__ = "Trevor Merrifield"
 
 from ircagent import IRCAgent
 import time
