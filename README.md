@@ -2,8 +2,8 @@ ComputercraftIRC
 ================
 Author: Trevor Merrifield (trevorm42@gmail.com)
 
-####What it does
-This lets a computercraft computer run an IRC client. The client can connect to an IRC channel, show
+####What is it?
+This is an IRC client for computercraft. The client can connect to an IRC channel, show
 it on screen and send messages to it.
 
 ####Screenshots
@@ -17,32 +17,22 @@ parts to get this running.
 * The server (that runs on the real computer) and  
 * The client (that runs on the computercraft computer).
 
-Quick start
-===========
 
-####Server
+Installation
+===============
+Installation instructions are in the release notes.
 
+
+Running from source
+===================
 1. Install python 2.7, irclib 8.3, and Flask
 2. In irclib, modify buffer.py modify line 80 so that errors = 'replace'.  This way the client won't crash when it faces strange text encodings.
 3. Forward port 5000 on your router (if you want to use this on remote computercraft servers)
-4. Run myflaskapp.py (use -h to see the parameters)
+4. Run server.py (use -h to see the parameters)
 
-####Client
-
-You will need an advanced computer next to a large advanced monitor. At the terminal enter:
-
-    pastebin get cT6943Sp client
-    edit client
-    
-At the top of client make sure you set MONITORSIDE, REMOTE and REMOTEDOMAIN. Now run
-
-    client
-    
-And it should start up.
 
 License
 =======
-
 All code is licensed under the MIT License with the exception of lua/JSON.lua which is copyright Jeffrey Friedl (http://regex.info/blog/lua/json).
     
     The MIT License (MIT)
