@@ -1,10 +1,10 @@
 #! /usr/bin/env python
-#
-# An IRC agent designed for a web api that allows minecraft computers to talk
+
+"""An IRC agent designed for a web api that allows minecraft computers to talk
 # over IRC.  It has an interface to let the user get a slice of the last 500 
-# messages sent over IRC as well as the users, ops and voiced members.
-#
-# Trevor Merrifield <trevorm42@gmail.com>
+# messages sent over IRC as well as the users, ops and voiced members."""
+
+__author__ = "Trevor Merrifield"
 
 import irc.bot
 import irc.client

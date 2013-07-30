@@ -1,3 +1,10 @@
+#!/usr/bin/env python
+
+"""A web server that barbarically bridges IRC to HTTP to allow chat via
+computercraft"""
+
+__author__ = "Trevor Merrifield"
+
 from flask import Flask
 from flask import request
 from flask import jsonify
