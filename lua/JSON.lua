@@ -1,13 +1,8 @@
--- Adapted for use with computercraft
---
--- In computercraft setmetatable(new, OBJDEF) converts OBJDEF's __index from a
--- table to a function in the returned new. This broke the
--- self.__index ~= OBJDEF
--- checks in the beginning of encode and decode so they were removed.
-
 -- -*- coding: utf-8 -*-
 --
 -- Copyright 2010-2013 Jeffrey Friedl
+-- Slightly modified for use with computercraft by Trevor Merrifield
+--
 -- http://regex.info/blog/
 --
 --
