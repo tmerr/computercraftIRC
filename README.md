@@ -1,5 +1,6 @@
 ComputercraftIRC
 ================
+https://github.com/tmerr/computercraftIRC  
 Author: Trevor Merrifield (trevorm42@gmail.com)
 
 ####What is it?
