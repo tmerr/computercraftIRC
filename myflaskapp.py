@@ -4,6 +4,8 @@ from flask import jsonify
 from ircagent import IRCAgent
 import threading
 from time import sleep
+import sys
+import argparse
 
 app = Flask(__name__)
 
@@ -74,9 +76,37 @@ def voiced():
         d[idx] = row
     return jsonify(d)
 
-if __name__ == "__main__":
-    agent = IRCAgent("frogbox.es", 6667, "#buttstorm", "FTB")
+def start(server, port, channel, nick, local, debug):
+    global agent
+    agent = IRCAgent(server, port, channel, nick)
     t = threading.Thread(target = agent.start)
     t.daemon = True
     t.start()
-    app.run(host='0.0.0.0')
+    if local or debug:
+        host = '127.0.0.1'
+    else:
+        host = '0.0.0.0'
+    if debug:
+        app.debug = True
+    app.run(host=host)
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Bridge IRC and HTTP')
+    parser.add_argument('server', type=str,
+                    help = 'the name of the irc server e.g. irc.freenode.net')
+    parser.add_argument('port', type=int, 
+                    help = 'the port of the irc server e.g. 6667')
+    parser.add_argument('channel', type=str,
+                    help = 'the channel of the irc server e.g. #test')
+    parser.add_argument('-nick', type=str, nargs='?',
+                    default='mcagent',
+                    help='the nick of the irc agent (default: mcagent)')
+    parser.add_argument('--local', dest='local', action='store_const',
+                    const=True, default=False,
+                    help='make server only visible to localhost')
+    parser.add_argument('--debug', dest='debug', action = 'store_const',
+                    const=True, default=False,
+                    help='use debug mode (forces --local)')
+    args = parser.parse_args()
+    start(args.server, args.port, args.channel, args.nick, args.local,
+            args.debug)
