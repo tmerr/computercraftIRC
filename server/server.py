@@ -27,7 +27,6 @@ class Application(cyclone.web.Application):
             (r"/sendmessage", SendMessageHandler),
             (r"/users", UsersHandler),
             (r"/ops", OpsHandler),
-            (r"/ops", OpsHandler),
             (r"/halfops", HalfopsHandler),
             (r"/voiced", VoicedHandler),
         ]
