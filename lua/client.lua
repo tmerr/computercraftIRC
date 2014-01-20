@@ -45,7 +45,7 @@ HALFOPS_URL = domain.."/halfops"
 VOICED_URL = domain.."/voiced"
 
 function sendMessage(text)
-	http.post(SENDMESSAGE_URL, text)
+    http.post(SENDMESSAGE_URL, "msg="..text)
 end
 
 -- Load the page at the URL, and return the JSON object from it. This function
